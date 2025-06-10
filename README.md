@@ -22,7 +22,7 @@ This project is a **Retrieval-Augmented Generation (RAG)** application designed 
 * **Language Model**: [Gemini LLM](https://deepmind.google/)
 * **Vector Store**: [FAISS](https://github.com/facebookresearch/faiss)
 * **Backend**: Python
-* **Frontend**: Streamlit or Flask (optional)
+* **Frontend**: Streamlit
 * **Parsing**: PDF and text parsers (e.g., PyMuPDF, pdfplumber)
 * **Embedding Model**: Gemini embedding API or sentence transformers
 
