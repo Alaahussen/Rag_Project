@@ -1,4 +1,8 @@
 # Environment & OS
+pip>=23.1
+setuptools>=68.0.0
+wheel>=0.41.0
+
 python-dotenv
 
 # Warnings and Pathlib are standard libraries, no need to list them
@@ -17,6 +21,7 @@ langchain-community
 langchain-google-genai
 
 # Embeddings and vector store
+torch==2.1.0
 sentence-transformers==2.2.2
 faiss-cpu
 
