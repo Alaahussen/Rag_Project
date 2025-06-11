@@ -1,6 +1,6 @@
 import os
 from langchain_community.document_loaders import PyMuPDFLoader, PDFPlumberLoader
-from langchain_community.schema import Document
+from langchain import Document
 
 def load_documents(directory_path):
     documents = []
