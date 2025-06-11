@@ -1,6 +1,11 @@
 import re
 import spacy
-nlp = spacy.load("en_core_web_sm")
+try:
+    nlp = spacy.load("en_core_web_sm")
+except OSError:
+    import subprocess
+    subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"])
+    nlp = spacy.load("en_core_web_sm")
 
 def split_camel_case(text):
     return re.sub(r'([a-z])([A-Z])', r'\1 \2', text)
