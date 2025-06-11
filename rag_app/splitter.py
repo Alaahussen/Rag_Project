@@ -1,4 +1,4 @@
-from langchain.schema import Document
+from langchain_community.schema import Document
 
 def split_by_chunk_size(documents, chunk_size=1000):
     all_chunks = []
