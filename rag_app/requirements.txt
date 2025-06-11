@@ -1,0 +1,25 @@
+# Environment & OS
+python-dotenv>=1.0.1
+
+# Warnings and Pathlib are standard libraries, no need to list them
+
+# PDF loaders
+PyMuPDF>=1.23.7  # for PyMuPDFLoader
+pdfplumber>=0.10.3  # for PDFPlumberLoader
+
+# NLP
+spacy>=3.7.2
+en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
+
+# LangChain ecosystem
+langchain>=0.1.15
+langchain-community>=0.0.30
+langchain-google-genai>=0.0.10
+
+# Embeddings and vector store
+sentence-transformers>=2.5.1
+faiss-cpu>=1.7.4
+
+# Google Generative AI
+google-generativeai>=0.5.2
+
