@@ -1,7 +1,8 @@
 import re
 import spacy
+import en_core_web_sm
 try:
-    nlp = spacy.load("en_core_web_sm")
+    nlp = en_core_web_sm.load()
 except OSError:
     import subprocess
     subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"])
