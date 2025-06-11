@@ -1,11 +1,10 @@
 import re
 import spacy
-import en_core_web_sm
+from spacy.cli import download
 try:
     nlp = spacy.load("en_core_web_sm")
 except OSError:
-    import subprocess
-    subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"])
+    download("en_core_web_sm")
     nlp = spacy.load("en_core_web_sm")
 
 def split_camel_case(text):
