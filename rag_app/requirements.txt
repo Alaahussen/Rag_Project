@@ -17,7 +17,7 @@ langchain-community
 langchain-google-genai
 
 # Embeddings and vector store
-sentence-transformers
+sentence-transformers==2.2.2
 faiss-cpu
 
 # Google Generative AI
