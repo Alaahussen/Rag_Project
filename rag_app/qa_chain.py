@@ -1,6 +1,6 @@
-from langchain_community.chains import RetrievalQA
-from langchain_community.prompts import PromptTemplate
-from langchain_community.memory import ConversationBufferMemory
+from langchain.chains import RetrievalQA
+from langchain.prompts import PromptTemplate
+from langchain.memory import ConversationBufferMemory
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 def create_qa_chain(vector_store):
