@@ -20,6 +20,7 @@ langchain-community==0.0.32  # version known to be stable
 langchain-google-genai==0.0.8  # match your `langchain` version
 
 # --- Embeddings & Vector Store ---
+torch
 sentence-transformers
 faiss-cpu==1.7.4
 
