@@ -1,29 +1,27 @@
-# Environment & OS
+# --- Environment Tools ---
 pip>=23.1
 setuptools>=68.0.0
 wheel>=0.41.0
 
+# --- Environment Variables ---
 python-dotenv
 
-# Warnings and Pathlib are standard libraries, no need to list them
+# --- PDF Processing ---
+PyMuPDF>=1.22.0          # safer to specify a minimum version
+pdfplumber>=0.10.2       # compatible with PyMuPDF & Python 3.8+
 
-# PDF loaders
-PyMuPDF  # for PyMuPDFLoader
-pdfplumber  # for PDFPlumberLoader
-
-# NLP
-spacy>=3.7.0
+# --- NLP & spaCy ---
+spacy==3.7.2
 en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1.tar.gz
 
-# LangChain ecosystem
-langchain
-langchain-community
-langchain-google-genai
+# --- LangChain Ecosystem ---
+langchain==0.1.14            # version pinning for reliability
+langchain-community==0.0.32  # version known to be stable
+langchain-google-genai==0.0.8  # match your `langchain` version
 
-# Embeddings and vector store
+# --- Embeddings & Vector Store ---
 sentence-transformers==2.2.2
-faiss-cpu
+faiss-cpu==1.7.4
 
-# Google Generative AI
-google-generativeai
-
+# --- Google Generative AI ---
+google-generativeai==0.3.2
