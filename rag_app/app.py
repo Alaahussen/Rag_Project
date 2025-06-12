@@ -113,7 +113,7 @@ Justification: [Your decision and explanation]
                 # Combine and format nicely
                 evaluations.append(f"{name}\n\n{justification}")
 
-    return "\n\n-----------------------------------------------------------------------------------------------------------------------------------\n\n".join(evaluations)
+    return "\n\n\n\n".join(evaluations)
     
 def extract_matches_and_paths(evaluation_output, upload_dir, cutoff=0.6):
     """
@@ -306,8 +306,8 @@ if page == "🏆 Rank Candidates":
                     st.subheader("🏅 Top Candidates")
                     #st.markdown(ranking)
                     # Split the full ranking output into blocks per candidate
-                                    # Split the ranking into individual candidate blocks
-                    candidate_blocks = ranking.split("\n\n-----------------------------------------------------------------------------------------------------------------------------------\n\n")
+                    # Split the ranking into individual candidate blocks
+                    candidate_blocks = ranking.split("\n\n\n\n")
                     
                     for block in candidate_blocks:
                         if not block.strip():
@@ -353,7 +353,7 @@ if page == "🏆 Rank Candidates":
                 except Exception as e:
                     st.error(f"An error occurred: {str(e)}")
         else:
-            st.error("Please upload CVs first"
+            st.error("Please upload CVs first")
     else:
         if ranking_key in st.session_state:
             st.subheader("🏅 Top Candidates")
