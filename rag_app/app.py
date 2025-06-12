@@ -52,7 +52,7 @@ nlp = spacy.load("en_core_web_sm")
 # UI config
 st.set_page_config(page_title="CV Ranker", layout="wide")
 
-def rank_candidates(criteria, vectorstore, candidate_names, top_n=10, k_per_candidate=3):
+def rank_candidates(criteria, vectorstore, candidate_names, top_n=3, k_per_candidate=3):
     """
     Rank top N candidates based on criteria and return those who meet the score threshold.
     Handles both general info (e.g., GPA) and skill/job-related queries differently.
@@ -275,7 +275,7 @@ if page == "🏆 Rank Candidates":
                     st.session_state.full_name_dict = {}
 
                     # Use the rank_candidates function
-                    ranking = rank_candidates(criteria, vector_store, candidate_names, top_n=10, k_per_candidate=3)
+                    ranking = rank_candidates(criteria, vector_store, candidate_names, top_n=3, k_per_candidate=3)
                     
                     # Store the ranking result
                     st.session_state[ranking_key] = ranking
