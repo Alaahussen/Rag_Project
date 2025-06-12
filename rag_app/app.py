@@ -306,26 +306,54 @@ if page == "🏆 Rank Candidates":
                     st.subheader("🏅 Top Candidates")
                     #st.markdown(ranking)
                     # Split the full ranking output into blocks per candidate
-                    blocks = ranking.strip().split("\n\n")
-                    formatted_blocks = []
-                    for block in blocks:
-                        lines = block.strip().split("\n", 1)
-                        if len(lines) == 2:
-                            first_line = f"<strong>{lines[0]}</strong>"
-                            rest = lines[1]
-                            formatted_block = f"{first_line}<br>{rest}"
-                        else:
-                            formatted_block = f"<strong>{lines[0]}</strong>"
-                        formatted_blocks.append(formatted_block)
+                                    # Split the ranking into individual candidate blocks
+                    candidate_blocks = ranking.split("\n\n-----------------------------------------------------------------------------------------------------------------------------------\n\n")
                     
-                    # Join blocks using horizontal lines
-                    final_html = "<div style='font-size:20px'>" + "<br>".join(formatted_blocks) + "</div>"
-                    st.markdown(final_html, unsafe_allow_html=True)
+                    for block in candidate_blocks:
+                        if not block.strip():
+                            continue
+                            
+                        # Split into candidate name and justification
+                        parts = block.split("\n\n", 1)
+                        if len(parts) == 2:
+                            name, justification = parts
+                        else:
+                            name = parts[0]
+                            justification = ""
+                        
+                        # Create a container for each candidate with custom styling
+                        with st.container():
+                            st.markdown(
+                                f"""
+                                <div style='
+                                    border-bottom: 2px solid #e0e0e0;
+                                    padding: 1rem;
+                                    margin-bottom: 1.5rem;
+                                '>
+                                    <div style='
+                                        font-size: 22px;
+                                        font-weight: bold;
+                                        color: #2c3e50;
+                                        margin-bottom: 0.5rem;
+                                    '>
+                                        {name}
+                                    </div>
+                                    <div style='
+                                        font-size: 16px;
+                                        line-height: 1.6;
+                                        color: #4a4a4a;
+                                    '>
+                                        {justification}
+                                    </div>
+                                </div>
+                                """,
+                                unsafe_allow_html=True
+                            )
 
                 except Exception as e:
                     st.error(f"An error occurred: {str(e)}")
         else:
-            st.error("Please upload CVs first")
+            st.error("Please upload CVs first"
     else:
         if ranking_key in st.session_state:
             st.subheader("🏅 Top Candidates")
