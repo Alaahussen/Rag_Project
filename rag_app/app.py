@@ -111,13 +111,14 @@ Justification: [Your decision and explanation]
                 justification = re.sub(r"^yes,? this candidate matches the requirement\.?", "", justification, flags=re.IGNORECASE).strip()
 
                 # Combine and format nicely
-                evaluations.append(f"{name}\n\n{justification}")
+                evaluations.append(f"{name}\n{justification}")
 
-    return "\n\n---\n\n".join(evaluations)
+    return "\n\n--------------------------------------------------------------\n\n".join(evaluations)
     
 def extract_matches_and_paths(evaluation_output, upload_dir, cutoff=0.6):
     """
-    Extract candidate names from evaluation and match them to PDF files using fuzzy matching.
+    Extract candidate names from evaluation output and match them to PDF files using fuzzy matching.
+    Assumes the candidate name is the first line of each block.
     Returns: {candidate_name: full_pdf_path}
     """
     matched = {}
@@ -126,20 +127,23 @@ def extract_matches_and_paths(evaluation_output, upload_dir, cutoff=0.6):
     pdf_files = [f for f in os.listdir(upload_dir) if f.lower().endswith(".pdf")]
     pdf_basenames = [os.path.splitext(f)[0].lower() for f in pdf_files]
 
-    # Split into evaluation blocks
-    for block in evaluation_output.strip().split("\n\n---\n\n"):
-        # Try to extract name from **Name** markdown or 'Candidate: Name'
-        name_match = re.search(r"\*\*(.+?)\*\*|Candidate:\s*(.+)", block, re.IGNORECASE)
-        if name_match:
-            # Get the name from either markdown or explicit label
-            candidate_name = (name_match.group(1) or name_match.group(2)).strip().lower()
+    # Split the evaluation into blocks per candidate
+    for block in evaluation_output.strip().split("\n\n"):
+        lines = block.strip().splitlines()
+        if not lines:
+            continue
 
-            # Fuzzy match with available PDF base filenames
-            closest = difflib.get_close_matches(candidate_name, pdf_basenames, n=1, cutoff=cutoff)
-            if closest:
-                match_idx = pdf_basenames.index(closest[0])
-                matched[candidate_name] = os.path.join(upload_dir, pdf_files[match_idx])
+        # Assume the first line is the candidate name
+        candidate_name = lines[0].strip().lower()
+
+        # Fuzzy match with PDF filenames
+        closest = difflib.get_close_matches(candidate_name, pdf_basenames, n=1, cutoff=cutoff)
+        if closest:
+            match_idx = pdf_basenames.index(closest[0])
+            matched[candidate_name] = os.path.join(upload_dir, pdf_files[match_idx])
+
     return matched
+
     
 # CSS styling
 st.markdown("""
