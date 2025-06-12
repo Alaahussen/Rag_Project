@@ -113,7 +113,7 @@ Justification: [Your decision and explanation]
                 # Combine and format nicely
                 evaluations.append(f"{name}\n\n{justification}")
 
-    return "\n\n--------------------------------------------------------------\n\n".join(evaluations)
+    return "\n\n\n\n".join(evaluations)
     
 def extract_matches_and_paths(evaluation_output, upload_dir, cutoff=0.6):
     """
