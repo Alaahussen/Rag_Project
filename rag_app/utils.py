@@ -14,7 +14,7 @@ def extract_name_spacy(text):
     text = re.sub(r'\.pdf$', '', text, flags=re.IGNORECASE)
     text = split_camel_case(text)
     text = re.sub(r'[_&\-]', ' ', text)
-    text = re.sub(r'\b(cv|resume|file|document|data|engineer|developer|ai|ml|scientist)\b', '', text, flags=re.IGNORECASE)
+    text = re.sub(r'\b(cv|resume|file|document|data|engineer|developer|ai|ml|scientist|al)\b', '', text, flags=re.IGNORECASE)
     text = re.sub(r'\s+', ' ', text).strip()  # clean up spacing
 
     doc = nlp(text)
