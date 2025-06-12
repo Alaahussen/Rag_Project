@@ -1,6 +1,7 @@
 import os
 import re
 import spacy
+import shutil
 import warnings
 from pathlib import Path
 from collections import Counter
