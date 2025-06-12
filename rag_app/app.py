@@ -52,6 +52,97 @@ nlp = spacy.load("en_core_web_sm")
 # UI config
 st.set_page_config(page_title="CV Ranker", layout="wide")
 
+def rank_candidates(criteria, vectorstore, candidate_names, top_n=10, k_per_candidate=3):
+    """
+    Rank top N candidates based on criteria and return those who meet the score threshold.
+    Handles both general info (e.g., GPA) and skill/job-related queries differently.
+    """
+
+    print(f"\n🔍 Identifying top {top_n} candidates matching: '{criteria}'")
+
+    # Step 1: Similarity search
+    all_docs = vectorstore.similarity_search(criteria, k=30)
+
+    # Step 2: Count matching chunks
+    from collections import Counter
+    candidate_counter = Counter()
+
+    for doc in all_docs:
+        candidate = doc.metadata.get("candidate_name")
+        if candidate in candidate_names:
+            candidate_counter[candidate] += 1
+
+    # Step 3: Get top N candidates by frequency
+    top_candidates = [name for name, _ in candidate_counter.most_common(top_n)]
+
+    evaluations = []
+
+    # Determine threshold
+    general_keywords = ["gpa", "grade", "university", "college", "city", "location", "school","from","faculty","graduated"]
+    lower_criteria = criteria.lower()
+    is_general = any(keyword in lower_criteria for keyword in general_keywords)
+    threshold = 8 if is_general else 6
+
+    # Step 4: Evaluate candidates
+    for candidate in top_candidates:
+        print(f"⚙️ Evaluating: {candidate}")
+        out[candidate] = folder_path + "/" + candidate + ".pdf"
+        candidate_docs = [doc for doc in all_docs if doc.metadata.get("candidate_name") == candidate][:k_per_candidate]
+
+        context = "\n\n".join([doc.page_content for doc in candidate_docs])
+
+        prompt = f"""
+You are an expert HR assistant evaluating a candidate for a position.
+
+Given the resume information below for candidate {candidate}, evaluate the candidate specifically on this criteria:
+{criteria}
+
+---
+📄 Resume Information:
+{context}
+---
+
+Provide a score from 1 to 10 and a justification.
+Format:
+CANDIDATE: {candidate}
+SCORE: [1-10]
+JUSTIFICATION: [Detailed explanation]
+"""
+        evaluation = generate_response(prompt)
+
+        # Parse the score from LLM output
+        import re
+        match = re.search(r"SCORE:\s*(\d+)", evaluation)
+        if match:
+            score = int(match.group(1))
+            if score >= threshold:
+                evaluations.append((score, evaluation))
+
+    # Step 5: If no candidates pass threshold
+    if not evaluations:
+        return f"No candidates scored above the threshold of {threshold} for: '{criteria}'"
+
+    # Step 6: Rank passed candidates
+    evaluations.sort(reverse=True, key=lambda x: x[0])  # Sort by score descending
+    all_evaluations = "\n\n".join([e[1] for e in evaluations])
+
+    ranking_prompt = f"""
+You are an expert HR assistant summarizing the top candidates for a position requiring:
+{criteria}
+
+Based on the evaluations below, summarize *why* these candidates are the best fit and rank them.
+
+Evaluations:
+{all_evaluations}
+
+Format your response as:
+1. Candidate Name (Score): Summary of why ranked here
+2. ...
+"""
+    ranking = generate_response(ranking_prompt)
+    return ranking
+
+
 # CSS styling
 st.markdown("""
     <style>
@@ -144,9 +235,11 @@ upload_dir = tempfile.mkdtemp()
 #upload_dir = "uploaded_cvs"
 #os.makedirs(upload_dir, exist_ok=True)  
 # ================= Page 1: Ranking ==================
+# ... (keep all previous imports and setup code the same)
+
+# ================= Page 1: Ranking ==================
 if page == "🏆 Rank Candidates":
     st.markdown('<div class="title-center">🏆 Rank Top Candidates Based on Job Description</div>', unsafe_allow_html=True)
-    
     
     uploaded_files = st.file_uploader(
         "📂 Upload CVs (PDF format)", 
@@ -176,70 +269,29 @@ if page == "🏆 Rank Candidates":
                     chunks = split_by_chunk_size(documents)
                     vector_store = create_vector_store(chunks)
 
-                    all_docs = vector_store.similarity_search(criteria, k=30)
-                    candidate_counter = Counter()
-
-                    for doc in all_docs:
-                        candidate = doc.metadata.get("candidate_name")
-                        if candidate in candidate_names:
-                            candidate_counter[candidate] += 1
-
-                    top_candidates = [name for name, _ in candidate_counter.most_common(5)]
-                    evaluations = []
-
+                    # Initialize session state dictionaries
                     st.session_state.out = {}
                     st.session_state.first_name_dict = {}
                     st.session_state.full_name_dict = {}
 
-                    for candidate in top_candidates:
+                    # Use the rank_candidates function
+                    ranking = rank_candidates(criteria, vector_store, candidate_names, top_n=10, k_per_candidate=3)
+                    
+                    # Store the ranking result
+                    st.session_state[ranking_key] = ranking
+                    
+                    # Populate name dictionaries for chatbot functionality
+                    for candidate in candidate_names:
                         cv_path = os.path.join(upload_dir, candidate + ".pdf")
                         st.session_state.out[candidate] = cv_path
-                        print(candidate)
                         name_parts = extract_name_spacy(candidate).lower().split()
-                        #print(name_parts)
                         if name_parts:
                             st.session_state.first_name_dict[name_parts[0]] = cv_path
                             if len(name_parts) > 1:
                                 full_name = " ".join(name_parts[:2])
                                 st.session_state.full_name_dict[full_name] = cv_path
-
-                        candidate_docs = [doc for doc in all_docs if doc.metadata.get("candidate_name") == candidate][:3]
-                        context = "\n\n".join([doc.page_content for doc in candidate_docs])
-
-                        prompt = f"""You are an expert HR assistant evaluating a candidate for a position.
-
-Given the resume information below for candidate {candidate}, evaluate the candidate specifically on this criteria:
-{criteria}
-
----
-📄 Resume Information:
-{context}
----
-
-Provide a score from 1 to 10 and a justification.
-Format:
-CANDIDATE: {candidate}
-SCORE: [1-10]
-JUSTIFICATION: [Detailed explanation]"""
-                        evaluation = generate_response(prompt)
-                        evaluations.append(evaluation)
-
-                    all_evaluations = "\n\n".join(evaluations)
-                    ranking_prompt = f"""You are an expert HR assistant summarizing the top 5 candidates for a position requiring:
-{criteria}
-
-Based on the evaluations below, summarize *why* these candidates are the best fit and rank them.
-
-Evaluations:
-{all_evaluations}
-
-Format your response as:
-1. Candidate Name (Score): Summary of why ranked here
-2. ..."""
-                    ranking = generate_response(ranking_prompt)
-                    st.session_state[ranking_key] = ranking
                     
-                    st.subheader("🏅 Top 5 Candidates")
+                    st.subheader("🏅 Top Candidates")
                     st.markdown(ranking)
                     
                 except Exception as e:
@@ -248,9 +300,10 @@ Format your response as:
             st.error("Please upload CVs first")
     else:
         if ranking_key in st.session_state:
-            st.subheader("🏅 Top 5 Candidates")
+            st.subheader("🏅 Top Candidates")
             st.markdown(st.session_state[ranking_key])
 
+# ... (keep the rest of the code exactly the same)
 # ================= Page 2: Chatbot ==================
 elif page == "💬 Candidate Chatbot":
     st.markdown('<div class="title-center">💬 Candidate Chatbot</div>', unsafe_allow_html=True)
