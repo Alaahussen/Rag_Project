@@ -48,10 +48,6 @@ warnings.filterwarnings("ignore")
 load_dotenv()
 api_key = os.getenv("GOOGLE_API_KEY")
 nlp = spacy.load("en_core_web_sm")
-
-# UI config
-st.set_page_config(page_title="CV Ranker", layout="wide")
-
 def rank_candidates(criteria, vectorstore, candidate_names, top_n=10, k_per_candidate=3):
     """
     Rank top N candidates based on criteria and return those who meet the score threshold.
@@ -64,7 +60,6 @@ def rank_candidates(criteria, vectorstore, candidate_names, top_n=10, k_per_cand
     all_docs = vectorstore.similarity_search(criteria, k=30)
 
     # Step 2: Count matching chunks
-    from collections import Counter
     candidate_counter = Counter()
 
     for doc in all_docs:
@@ -86,7 +81,7 @@ def rank_candidates(criteria, vectorstore, candidate_names, top_n=10, k_per_cand
     # Step 4: Evaluate candidates
     for candidate in top_candidates:
         print(f"⚙️ Evaluating: {candidate}")
-        out[candidate] = folder_path + "/" + candidate + ".pdf"
+        #out[candidate] = folder_path + "/" + candidate + ".pdf"
         candidate_docs = [doc for doc in all_docs if doc.metadata.get("candidate_name") == candidate][:k_per_candidate]
 
         context = "\n\n".join([doc.page_content for doc in candidate_docs])
@@ -111,7 +106,6 @@ JUSTIFICATION: [Detailed explanation]
         evaluation = generate_response(prompt)
 
         # Parse the score from LLM output
-        import re
         match = re.search(r"SCORE:\s*(\d+)", evaluation)
         if match:
             score = int(match.group(1))
@@ -142,7 +136,7 @@ Format your response as:
     ranking = generate_response(ranking_prompt)
     return ranking
 
-
+st.set_page_config(page_title="CV Ranker", layout="wide")
 # CSS styling
 st.markdown("""
     <style>
