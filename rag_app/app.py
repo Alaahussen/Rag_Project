@@ -111,7 +111,7 @@ Justification: [Your decision and explanation]
                 justification = re.sub(r"^yes,? this candidate matches the requirement\.?", "", justification, flags=re.IGNORECASE).strip()
 
                 # Combine and format nicely
-                evaluations.append(f"{name}\n{justification}")
+                evaluations.append(f"{name}\n\n{justification}")
 
     return "\n\n--------------------------------------------------------------\n\n".join(evaluations)
     
