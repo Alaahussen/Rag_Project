@@ -269,7 +269,7 @@ elif page == "💬 Candidate Chatbot":
 
     if query:
         # 🔍 Print debug info
-        print("🔍 First Name Dict:", st.session_state.first_name_dict)
+        print("🔍 First Name Dict:", st.session_state.first_name_dict
         print("🔍 Full Name Dict:", st.session_state.full_name_dict)
 
         greetings = ["hi", "hello", "hey", "good morning", "good evening"]
