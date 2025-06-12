@@ -331,7 +331,7 @@ if page == "🏆 Rank Candidates":
                                     margin-bottom: 1.5rem;
                                 '>
                                     <div style='
-                                        font-size: 22px;
+                                        font-size: 23px;
                                         font-weight: bold;
                                         color: #2c3e50;
                                         margin-bottom: 0.5rem;
@@ -339,7 +339,7 @@ if page == "🏆 Rank Candidates":
                                         {name}
                                     </div>
                                     <div style='
-                                        font-size: 16px;
+                                        font-size: 20px;
                                         line-height: 1.6;
                                         color: #4a4a4a;
                                     '>
@@ -357,7 +357,47 @@ if page == "🏆 Rank Candidates":
     else:
         if ranking_key in st.session_state:
             st.subheader("🏅 Top Candidates")
-            st.markdown(st.session_state[ranking_key])
+            # Display stored results with the same formatting
+            candidate_blocks = st.session_state[ranking_key].split("\n\n\n\n")
+            for block in candidate_blocks:
+                if not block.strip():
+                    continue
+                
+                parts = block.split("\n\n", 1)
+                if len(parts) == 2:
+                    name, justification = parts
+                else:
+                    name = parts[0]
+                    justification = ""
+                
+                with st.container():
+                    st.markdown(
+                        f"""
+                        <div style='
+                            border-bottom: 2px solid #e0e0e0;
+                            padding: 1rem;
+                            margin-bottom: 1.5rem;
+                        '>
+                            <div style='
+                                font-size: 23px;
+                                font-weight: bold;
+                                color: #2c3e50;
+                                margin-bottom: 0.5rem;
+                            '>
+                                {name}
+                            </div>
+                            <div style='
+                                font-size: 20px;
+                                line-height: 1.6;
+                                color: #4a4a4a;
+                            '>
+                                {justification}
+                            </div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
+            
 
 # ... (keep the rest of the code exactly the same)
 # ================= Page 2: Chatbot ==================
