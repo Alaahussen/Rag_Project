@@ -139,13 +139,7 @@ for key in ["out", "first_name_dict", "full_name_dict"]:
 
 # Directory for uploads
 upload_dir = "uploaded_cvs"
-#os.makedirs(upload_dir, exist_ok=True)
-def clear_upload_directory():
-    """Empty the upload directory completely"""
-    if os.path.exists(upload_dir):
-        shutil.rmtree(upload_dir)
-    os.makedirs(upload_dir, exist_ok=True)
-clear_upload_directory()  
+os.makedirs(upload_dir, exist_ok=True)  
 # ================= Page 1: Ranking ==================
 if page == "🏆 Rank Candidates":
     st.markdown('<div class="title-center">🏆 Rank Top Candidates Based on Job Description</div>', unsafe_allow_html=True)
