@@ -52,11 +52,11 @@ This project is a **Retrieval-Augmented Generation (RAG)** application designed 
 ```
 📁 rag-job-matcher/
 │
-├── data/              # Sample CVs
-├── rag_app/vectorstore.py        # FAISS index and embedding cache
-├── app.py             # Main application file
-├── utils.py           # Helper functions 
-├── gemini_generate.py     # Chat wrapper with Gemini
+├── data/               # Sample CVs
+├── vectorstore.py      # FAISS index and embedding cache
+├── app.py              # Main application file
+├── utils.py            # Helper functions 
+├── gemini_generate.py  # Chat wrapper with Gemini
 ├── requirements.txt
 └── README.md
 ```
