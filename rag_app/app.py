@@ -273,9 +273,17 @@ if page == "🏆 Rank Candidates":
                     
                     # Store the ranking result
                     st.session_state[ranking_key] = ranking
+                    ranked_candidates = []
+                    if isinstance(ranking, str):  
+                        lines = ranking.split('\n')
+                        for line in lines:
+                            if line.strip() and line[0].isdigit():  
+                                candidate_part = line.split('.')[1].split('(')[0].strip()
+                                ranked_candidates.append(candidate_part)
+
+                    candidates_to_process = ranked_candidates if ranked_candidates else candidate_names
                     
-                    # Populate name dictionaries for chatbot functionality
-                    for candidate in candidate_names:
+                    for candidate in candidates_to_process:
                         cv_path = os.path.join(upload_dir, candidate + ".pdf")
                         st.session_state.out[candidate] = cv_path
                         name_parts = extract_name_spacy(candidate).lower().split()
