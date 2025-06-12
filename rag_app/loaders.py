@@ -1,6 +1,6 @@
 import os
 from tqdm import tqdm
-from langchain_community.document_loaders import PyMuPDFLoader  # Unified loader
+from langchain_community.document_loaders import PyMuPDFLoade  # Unified loader
 from langchain.schema import Document
 
 def load_documents(directory_path):
