@@ -55,12 +55,11 @@ st.set_page_config(page_title="CV Ranker", layout="wide")
 
 
 def query_all_resumes(question,vector_store, k=100):
-    """Query resumes and return ONLY matching candidates with justification."""
+    """Query resumes and return only matching candidates with clean justification for Streamlit display."""
     
-    # 1. Get top relevant chunks for the question
     all_docs = vector_store.similarity_search(question, k=k)
 
-    # 2. Group documents by candidate
+    # Group documents by candidate
     candidate_chunks = {}
     for doc in all_docs:
         candidate = doc.metadata.get("candidate_name", "Unknown")
@@ -69,7 +68,7 @@ def query_all_resumes(question,vector_store, k=100):
     evaluations = []
 
     for candidate, pages in candidate_chunks.items():
-        context = "\n\n".join(pages[:3])  # Top 3 chunks per candidate
+        context = "\n\n".join(pages[:3])  # Limit to top 3 chunks
 
         prompt = f"""
 You are an expert HR assistant helping with candidate screening.
@@ -98,39 +97,50 @@ Justification: [Your decision and explanation]
 
         response = generate_response(prompt)
 
-        # Only include responses where the candidate is a match
+        # Filter out non-matching candidates
         if "not a match" not in response.lower():
-            evaluations.append(response)
+            # Extract only candidate name and cleaned justification
+            name_match = re.search(r"Candidate:\s*(.+)", response)
+            just_match = re.search(r"Justification:\s*(.*)", response, re.DOTALL)
 
-    return "\n\n".join(evaluations)
+            if name_match and just_match:
+                name = name_match.group(1).strip()
+                justification = just_match.group(1).strip()
 
+                # Optional: Remove "Yes, this candidate matches the requirement" boilerplate
+                justification = re.sub(r"^yes,? this candidate matches the requirement\.?", "", justification, flags=re.IGNORECASE).strip()
 
+                # Combine and format nicely
+                evaluations.append(f"**{name}**\n\n{justification}")
 
+    return "\n\n---\n\n".join(evaluations)
+    
 def extract_matches_and_paths(evaluation_output, upload_dir, cutoff=0.6):
     """
-    Extract candidate names from evaluation and match them to PDF files using fuzzy logic.
-    Returns {candidate_name: full_pdf_path}
+    Extract candidate names from evaluation and match them to PDF files using fuzzy matching.
+    Returns: {candidate_name: full_pdf_path}
     """
     matched = {}
+    
+    # Get all PDF filenames and their lowercase base names
     pdf_files = [f for f in os.listdir(upload_dir) if f.lower().endswith(".pdf")]
     pdf_basenames = [os.path.splitext(f)[0].lower() for f in pdf_files]
 
-    for block in evaluation_output.strip().split("\n\n"):
-        lines = block.strip().splitlines()
-        if not lines or not lines[0].lower().startswith("candidate:"):
-            continue
+    # Split into evaluation blocks
+    for block in evaluation_output.strip().split("\n\n---\n\n"):
+        # Try to extract name from **Name** markdown or 'Candidate: Name'
+        name_match = re.search(r"\*\*(.+?)\*\*|Candidate:\s*(.+)", block, re.IGNORECASE)
+        if name_match:
+            # Get the name from either markdown or explicit label
+            candidate_name = (name_match.group(1) or name_match.group(2)).strip().lower()
 
-        candidate_name = lines[0].split(":", 1)[1].strip().lower()
-
-        # Try to find the closest match in filenames
-        closest = difflib.get_close_matches(candidate_name, pdf_basenames, n=1, cutoff=cutoff)
-        if closest:
-            match_idx = pdf_basenames.index(closest[0])
-            matched[candidate_name] = os.path.join(upload_dir, pdf_files[match_idx])
-
+            # Fuzzy match with available PDF base filenames
+            closest = difflib.get_close_matches(candidate_name, pdf_basenames, n=1, cutoff=cutoff)
+            if closest:
+                match_idx = pdf_basenames.index(closest[0])
+                matched[candidate_name] = os.path.join(upload_dir, pdf_files[match_idx])
     return matched
-
-
+    
 # CSS styling
 st.markdown("""
     <style>
