@@ -302,18 +302,7 @@ if page == "🏆 Rank Candidates":
                     st.subheader("🏅 Top Candidates")
                     #st.markdown(ranking)
                     # Optional pre-formatting of ranking text to highlight candidate names
-                    formatted_ranking = ""
-                    for block in ranking.strip().split("\n\n"):
-                        if block.strip().startswith("**"):
-                            # Enlarge candidate name
-                            parts = block.strip().split("\n", 1)
-                            name = parts[0]
-                            rest = parts[1] if len(parts) > 1 else ""
-                            formatted_ranking += f"<div style='font-size:24px; font-weight:bold'>{name}</div><div style='font-size:18px'>{rest}</div><br><br>"
-                        else:
-                            formatted_ranking += f"<div style='font-size:20px'>{block}</div><br><br>"
-                    
-                    st.markdown(formatted_ranking, unsafe_allow_html=True)
+                    st.markdown(f"<div style='font-size:20px'>{ranking}</div>", unsafe_allow_html=True)
                 except Exception as e:
                     st.error(f"An error occurred: {str(e)}")
         else:
