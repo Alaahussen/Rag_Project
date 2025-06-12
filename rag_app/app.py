@@ -6,10 +6,11 @@ import warnings
 from pathlib import Path
 from collections import Counter
 import tempfile
-
-
+from collections import Counter
 import streamlit as st
 from dotenv import load_dotenv
+import os
+import difflib
 
 from loaders import (
     load_documents,
@@ -52,95 +53,82 @@ nlp = spacy.load("en_core_web_sm")
 # UI config
 st.set_page_config(page_title="CV Ranker", layout="wide")
 
-def rank_candidates(criteria, vectorstore, candidate_names, top_n=3, k_per_candidate=3):
-    """
-    Rank top N candidates based on criteria and return those who meet the score threshold.
-    Handles both general info (e.g., GPA) and skill/job-related queries differently.
-    """
 
-    print(f"\n🔍 Identifying top {top_n} candidates matching: '{criteria}'")
+def query_all_resumes(question,vector_store, k=100):
+    """Query resumes and return ONLY matching candidates with justification."""
+    
+    # 1. Get top relevant chunks for the question
+    all_docs = vector_store.similarity_search(question, k=k)
 
-    # Step 1: Similarity search
-    all_docs = vectorstore.similarity_search(criteria, k=30)
-
-    # Step 2: Count matching chunks
-    from collections import Counter
-    candidate_counter = Counter()
-
+    # 2. Group documents by candidate
+    candidate_chunks = {}
     for doc in all_docs:
-        candidate = doc.metadata.get("candidate_name")
-        if candidate in candidate_names:
-            candidate_counter[candidate] += 1
-
-    # Step 3: Get top N candidates by frequency
-    top_candidates = [name for name, _ in candidate_counter.most_common(top_n)]
+        candidate = doc.metadata.get("candidate_name", "Unknown")
+        candidate_chunks.setdefault(candidate, []).append(doc.page_content)
 
     evaluations = []
 
-    # Determine threshold
-    general_keywords = ["gpa", "grade", "university", "college", "city", "location", "school","from","faculty","graduated"]
-    lower_criteria = criteria.lower()
-    is_general = any(keyword in lower_criteria for keyword in general_keywords)
-    threshold = 8 if is_general else 6
-
-    # Step 4: Evaluate candidates
-    for candidate in top_candidates:
-        print(f"⚙️ Evaluating: {candidate}")
-        #out[candidate] = folder_path + "/" + candidate + ".pdf"
-        candidate_docs = [doc for doc in all_docs if doc.metadata.get("candidate_name") == candidate][:k_per_candidate]
-
-        context = "\n\n".join([doc.page_content for doc in candidate_docs])
+    for candidate, pages in candidate_chunks.items():
+        context = "\n\n".join(pages[:3])  # Top 3 chunks per candidate
 
         prompt = f"""
-You are an expert HR assistant evaluating a candidate for a position.
+You are an expert HR assistant helping with candidate screening.
 
-Given the resume information below for candidate {candidate}, evaluate the candidate specifically on this criteria:
-{criteria}
+Given the resume information below for candidate {candidate}, answer the HR professional's question.
 
 ---
 📄 Resume Information:
 {context}
 ---
 
-Provide a score from 1 to 10 and a justification.
-Format:
-CANDIDATE: {candidate}
-SCORE: [1-10]
-JUSTIFICATION: [Detailed explanation]
+❓ HR Question:
+{question}
+
+---
+🎯 Your Task:
+- Say whether this candidate matches the requirement.
+- If yes, explain *why* using the resume.
+- If no, say clearly: "This candidate is not a match based on the resume."
+- Only use information found in the resume.
+- Use this format:
+
+Candidate: {candidate}  
+Justification: [Your decision and explanation]
 """
-        evaluation = generate_response(prompt)
 
-        # Parse the score from LLM output
-        import re
-        match = re.search(r"SCORE:\s*(\d+)", evaluation)
-        if match:
-            score = int(match.group(1))
-            if score >= threshold:
-                evaluations.append((score, evaluation))
+        response = generate_response(prompt)
 
-    # Step 5: If no candidates pass threshold
-    if not evaluations:
-        return f"No candidates scored above the threshold of {threshold} for: '{criteria}'"
+        # Only include responses where the candidate is a match
+        if "not a match" not in response.lower():
+            evaluations.append(response)
 
-    # Step 6: Rank passed candidates
-    evaluations.sort(reverse=True, key=lambda x: x[0])  # Sort by score descending
-    all_evaluations = "\n\n".join([e[1] for e in evaluations])
+    return "\n\n".join(evaluations)
 
-    ranking_prompt = f"""
-You are an expert HR assistant summarizing the top candidates for a position requiring:
-{criteria}
 
-Based on the evaluations below, summarize *why* these candidates are the best fit and rank them.
 
-Evaluations:
-{all_evaluations}
+def extract_matches_and_paths(evaluation_output, upload_dir, cutoff=0.6):
+    """
+    Extract candidate names from evaluation and match them to PDF files using fuzzy logic.
+    Returns {candidate_name: full_pdf_path}
+    """
+    matched = {}
+    pdf_files = [f for f in os.listdir(upload_dir) if f.lower().endswith(".pdf")]
+    pdf_basenames = [os.path.splitext(f)[0].lower() for f in pdf_files]
 
-Format your response as:
-1. Candidate Name (Score): Summary of why ranked here
-2. ...
-"""
-    ranking = generate_response(ranking_prompt)
-    return ranking
+    for block in evaluation_output.strip().split("\n\n"):
+        lines = block.strip().splitlines()
+        if not lines or not lines[0].lower().startswith("candidate:"):
+            continue
+
+        candidate_name = lines[0].split(":", 1)[1].strip().lower()
+
+        # Try to find the closest match in filenames
+        closest = difflib.get_close_matches(candidate_name, pdf_basenames, n=1, cutoff=cutoff)
+        if closest:
+            match_idx = pdf_basenames.index(closest[0])
+            matched[candidate_name] = os.path.join(upload_dir, pdf_files[match_idx])
+
+    return matched
 
 
 # CSS styling
@@ -274,23 +262,33 @@ if page == "🏆 Rank Candidates":
                     st.session_state.first_name_dict = {}
                     st.session_state.full_name_dict = {}
 
-                    # Use the rank_candidates function
-                    ranking = rank_candidates(criteria, vector_store, candidate_names, top_n=3, k_per_candidate=3)
-                    
-                    # Store the ranking result
+                    # Assume `ranking` is the evaluation output (text)
+                    ranking = query_all_resumes(criteria,vector_store)
+
+                    # Store the raw ranking output for display or debugging
                     st.session_state[ranking_key] = ranking
-                    
-                    # Populate name dictionaries for chatbot functionality
-                    for candidate in candidate_names:
-                        cv_path = os.path.join(upload_dir, candidate + ".pdf")
-                        st.session_state.out[candidate] = cv_path
-                        name_parts = extract_name_spacy(candidate).lower().split()
-                        if name_parts:
-                            st.session_state.first_name_dict[name_parts[0]] = cv_path
+
+                    # Extract matched candidate names and PDF paths
+                    matched_candidates = extract_matches_and_paths(ranking, upload_dir)
+
+                    # Save it to session state for future access
+                    st.session_state["out"] = matched_candidates
+
+                    # Initialize dicts if not already in session state
+                    if "first_name_dict" not in st.session_state:
+                        st.session_state.first_name_dict = {}
+                    if "full_name_dict" not in st.session_state:
+                        st.session_state.full_name_dict = {}
+
+                    # Populate name dictionaries
+                    for candidate, path in matched_candidates.items():
+                            name_parts = extract_name_spacy(candidate).lower().split()
+                            if name_parts:
+                                st.session_state.first_name_dict[name_parts[0]] = path
                             if len(name_parts) > 1:
                                 full_name = " ".join(name_parts[:2])
-                                st.session_state.full_name_dict[full_name] = cv_path
-                    
+                                st.session_state.full_name_dict[full_name] = path
+
                     st.subheader("🏅 Top Candidates")
                     st.markdown(ranking)
                     
