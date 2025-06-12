@@ -196,6 +196,7 @@ if page == "🏆 Rank Candidates":
                         st.session_state.out[candidate] = cv_path
 
                         name_parts = extract_name_spacy(candidate).lower().split()
+                        print(name_parts)
                         if name_parts:
                             st.session_state.first_name_dict[name_parts[0]] = cv_path
                             if len(name_parts) > 1:
