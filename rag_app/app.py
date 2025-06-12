@@ -113,7 +113,7 @@ Justification: [Your decision and explanation]
                 # Combine and format nicely
                 evaluations.append(f"{name}\n\n{justification}")
 
-    return "\n\n\n\n".join(evaluations)
+    return "\n\n------------------------------------------------------------------------------------------------------------------------\n\n".join(evaluations)
     
 def extract_matches_and_paths(evaluation_output, upload_dir, cutoff=0.6):
     """
@@ -319,7 +319,7 @@ if page == "🏆 Rank Candidates":
                         formatted_blocks.append(formatted_block)
                     
                     # Join blocks using horizontal lines
-                    final_html = "<div style='font-size:20px'>" + "<hr>".join(formatted_blocks) + "</div>"
+                    final_html = "<div style='font-size:20px'>" + "<br>".join(formatted_blocks) + "</div>"
                     st.markdown(final_html, unsafe_allow_html=True)
 
                 except Exception as e:
