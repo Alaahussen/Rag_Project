@@ -309,9 +309,9 @@ if page == "🏆 Rank Candidates":
                             parts = block.strip().split("\n", 1)
                             name = parts[0]
                             rest = parts[1] if len(parts) > 1 else ""
-                            formatted_ranking += f"<div style='font-size:22px; font-weight:bold'>{name}</div><div style='font-size:18px'>{rest}</div><br><br>"
+                            formatted_ranking += f"<div style='font-size:24px; font-weight:bold'>{name}</div><div style='font-size:18px'>{rest}</div><br><br>"
                         else:
-                            formatted_ranking += f"<div style='font-size:18px'>{block}</div><br><br>"
+                            formatted_ranking += f"<div style='font-size:20px'>{block}</div><br><br>"
                     
                     st.markdown(formatted_ranking, unsafe_allow_html=True)
                 except Exception as e:
