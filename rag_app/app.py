@@ -300,8 +300,8 @@ if page == "🏆 Rank Candidates":
                                 st.session_state.full_name_dict[full_name] = path
 
                     st.subheader("🏅 Top Candidates")
-                    st.markdown(ranking)
-                    
+                    st.markdown(f"<div style='font-size:20px'>{ranking}</div>", unsafe_allow_html=True)
+ 
                 except Exception as e:
                     st.error(f"An error occurred: {str(e)}")
         else:
