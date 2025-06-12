@@ -194,16 +194,16 @@ if page == "🏆 Rank Candidates":
                     for candidate in top_candidates:
                         cv_path = os.path.join(upload_dir, candidate + ".pdf")
                         st.session_state.out[candidate] = cv_path
-
+                        print(candidate)
                         name_parts = extract_name_spacy(candidate).lower().split()
-                        print(name_parts)
+                        #print(name_parts)
                         if name_parts:
                             st.session_state.first_name_dict[name_parts[0]] = cv_path
                             if len(name_parts) > 1:
                                 full_name = " ".join(name_parts[:2])
                                 st.session_state.full_name_dict[full_name] = cv_path
 
-                        candidate_docs = [doc for doc in all_docs if doc.metadata.get("candidate_name") == candidate][:5]
+                        candidate_docs = [doc for doc in all_docs if doc.metadata.get("candidate_name") == candidate][:3]
                         context = "\n\n".join([doc.page_content for doc in candidate_docs])
 
                         prompt = f"""You are an expert HR assistant evaluating a candidate for a position.
