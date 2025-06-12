@@ -5,7 +5,7 @@ import shutil
 import warnings
 from pathlib import Path
 from collections import Counter
-import tempfile
+import tempfil
 
 
 import streamlit as st
