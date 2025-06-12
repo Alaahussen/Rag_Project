@@ -138,8 +138,9 @@ for key in ["out", "first_name_dict", "full_name_dict"]:
         st.session_state[key] = {}
 
 # Directory for uploads
-upload_dir = "uploaded_cvs"
-os.makedirs(upload_dir, exist_ok=True)  
+upload_dir = tempfile.mkdtemp()
+#upload_dir = "uploaded_cvs"
+#os.makedirs(upload_dir, exist_ok=True)  
 # ================= Page 1: Ranking ==================
 if page == "🏆 Rank Candidates":
     st.markdown('<div class="title-center">🏆 Rank Top Candidates Based on Job Description</div>', unsafe_allow_html=True)
