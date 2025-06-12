@@ -46,7 +46,7 @@ from utils import (
 # Setup
 warnings.filterwarnings("ignore")
 load_dotenv()
-api_key = os.getenv("GOOGLE_API_KEY")
+api_key = os.getenv("API_KEY")
 nlp = spacy.load("en_core_web_sm")
 
 # UI config
