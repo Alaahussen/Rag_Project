@@ -111,7 +111,7 @@ Justification: [Your decision and explanation]
                 justification = re.sub(r"^yes,? this candidate matches the requirement\.?", "", justification, flags=re.IGNORECASE).strip()
 
                 # Combine and format nicely
-                evaluations.append(f"**{name}**\n\n{justification}")
+                evaluations.append(f"{name}\n\n{justification}")
 
     return "\n\n---\n\n".join(evaluations)
     
@@ -309,7 +309,7 @@ if page == "🏆 Rank Candidates":
                             parts = block.strip().split("\n", 1)
                             name = parts[0]
                             rest = parts[1] if len(parts) > 1 else ""
-                            formatted_ranking += f"<div style='font-size:24px; font-weight:bold'>{name}</div><div style='font-size:18px'>{rest}</div><br><br>"
+                            formatted_ranking += f"<div style='font-size:20px; font-weight:bold'>{name}</div><div style='font-size:18px'>{rest}</div><br><br>"
                         else:
                             formatted_ranking += f"<div style='font-size:18px'>{block}</div><br><br>"
                     
