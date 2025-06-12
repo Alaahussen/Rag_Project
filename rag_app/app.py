@@ -310,7 +310,7 @@ if page == "🏆 Rank Candidates":
                     if len(lines) == 2:
                         first_line = f"<strong>{lines[0]}</strong>"
                         rest = lines[1]
-                        formatted = f"<div style='font-size:20px'>{first_line}<br>{rest}</div>"
+                        formatted = f"<div style='font-size:24px'>{first_line}<br>{rest}</div>"
                     else:
                         # If there's only one line, just bold it
                         formatted = f"<div style='font-size:20px'><strong>{ranking}</strong></div>"
