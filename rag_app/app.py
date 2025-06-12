@@ -3,7 +3,7 @@ import re
 import spacy
 import shutil
 import warnings
-from pathlib import Pat
+from pathlib import Path
 from collections import Counter
 import tempfile
 from collections import Counter
