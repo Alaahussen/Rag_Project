@@ -285,16 +285,14 @@ if page == "🏆 Rank Candidates":
                     
                     for candidate in candidates_to_process:
                         clean_candidate = candidate.replace('**', '')
-                        for filename in os.listdir(upload_dir):
-                            if filename.lower().endswith(".pdf") and clean_candidate in filename.lower():
-                                cv_path=os.path.join(upload_dir, filename)
-                                st.session_state.out[clean_candidate] = cv_path
-                                name_parts = extract_name_spacy(clean_candidate).lower().split()
-                                if name_parts:
-                                    st.session_state.first_name_dict[name_parts[0]] = cv_path
-                                    if len(name_parts) > 1:
-                                        full_name = " ".join(name_parts[:2])
-                                        st.session_state.full_name_dict[full_name] = cv_path
+                        cv_path=os.path.join(upload_dir, clean_candidate + ".pdf")
+                        st.session_state.out[clean_candidate] = cv_path
+                        name_parts = extract_name_spacy(clean_candidate).lower().split()
+                        if name_parts:
+                            st.session_state.first_name_dict[name_parts[0]] = cv_path
+                            if len(name_parts) > 1:
+                                full_name = " ".join(name_parts[:2])
+                                st.session_state.full_name_dict[full_name] = cv_path
                     
                     st.subheader("🏅 Top Candidates")
                     st.markdown(ranking)
