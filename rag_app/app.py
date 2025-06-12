@@ -306,17 +306,21 @@ if page == "🏆 Rank Candidates":
                     st.subheader("🏅 Top Candidates")
                     #st.markdown(ranking)
                     # Optional pre-formatting of ranking text to highlight candidate names
-                    lines = ranking.strip().split("\n", 1)
-                    if len(lines) == 2:
-                        first_line = f"<strong>{lines[0]}</strong>"
-                        rest = lines[1]
-                        formatted = f"<div style='font-size:24px'>{first_line}<br>{rest}</div>"
-                    else:
-                        # If there's only one line, just bold it
-                        formatted = f"<div style='font-size:20px'><strong>{ranking}</strong></div>"
-                    
-                    st.markdown(formatted, unsafe_allow_html=True)
-
+                    # Split the full ranking output into blocks per candidate
+                    blocks = ranking.strip().split("\n\n")
+                    formatted_blocks = []
+                    for block in blocks:
+                        lines = block.strip().split("\n", 1)
+                        if len(lines) == 2:
+                            first_line = f"<strong>{lines[0]}</strong>"
+                            rest = lines[1]
+                            formatted_block = f"{first_line}<br>{rest}"
+                        else:
+                            formatted_block = f"<strong>{lines[0]}</strong>"
+                        formatted_blocks.append(formatted_block)
+                    # Join all blocks and apply consistent styling
+                    final_html = "<div style='font-size:20px'>" + "<br><br>".join(formatted_blocks) + "</div>"
+                    st.markdown(final_html, unsafe_allow_html=True)
                 except Exception as e:
                     st.error(f"An error occurred: {str(e)}")
         else:
