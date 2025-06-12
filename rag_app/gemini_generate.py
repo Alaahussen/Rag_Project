@@ -1,4 +1,4 @@
-import google.generativeai as gena
+import google.generativeai as genai
 from config import GOOGLE_API_KEY
 
 def generate_response(prompt):
