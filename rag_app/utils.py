@@ -15,12 +15,17 @@ def extract_name_spacy(text):
     text = split_camel_case(text)
     text = re.sub(r'[_&\-]', ' ', text)
     text = re.sub(r'\b(cv|resume|file|document|data|engineer|developer|ai|ml|scientist)\b', '', text, flags=re.IGNORECASE)
+    text = re.sub(r'\s+', ' ', text).strip()  # clean up spacing
+
     doc = nlp(text)
     for ent in doc.ents:
         if ent.label_ == "PERSON":
             return ent.text.strip()
-    words = [w for w in text.split() if w.istitle()]
+
+    # fallback: try title-casing alpha words
+    words = [w.capitalize() for w in text.split() if w.isalpha()]
     return " ".join(words) if words else None
+
 
 def extract_matched_names_from_query(query, full_name_dict, first_name_dict):
     query = query.lower()
