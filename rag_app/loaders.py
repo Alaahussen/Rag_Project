@@ -1,30 +1,60 @@
 import os
-from langchain_community.document_loaders import PyMuPDFLoader, PDFPlumberLoader
+from tqdm import tqdm
+from langchain_community.document_loaders import PyMuPDFLoader  # Unified loader
 from langchain.schema import Document
 
 def load_documents(directory_path):
+    """
+    Load all PDF resumes from a directory using PyMuPDFLoader.
+
+    Args:
+        directory_path (str): Path to the directory containing PDF resumes.
+
+    Returns:
+        documents (list): List of LangChain Document objects.
+        candidate_names (list): List of candidate names derived from filenames.
+    """
     documents = []
     candidate_names = []
 
-    for filename in os.listdir(directory_path):
-        if filename.endswith(".pdf"):
+    for filename in tqdm(os.listdir(directory_path), desc="Loading PDFs"):
+        if filename.lower().endswith(".pdf"):
             path = os.path.join(directory_path, filename)
-            loader = PyMuPDFLoader(path)
-            docs = loader.load()
+            try:
+                loader = PyMuPDFLoader(path)
+                docs = loader.load()
 
-            candidate_name = os.path.splitext(filename)[0]
-            candidate_names.append(candidate_name)
+                # Sanitize candidate name (remove extension, clean formatting)
+                candidate_name = os.path.splitext(filename)[0]
+                candidate_name = candidate_name.replace('_', ' ').replace('-', ' ').title()
+                candidate_names.append(candidate_name)
 
-            for doc in docs:
-                doc.metadata["candidate_name"] = candidate_name
-                doc.metadata["source_file"] = filename
+                # Add metadata to each document chunk
+                for doc in docs:
+                    doc.metadata["candidate_name"] = candidate_name
+                    doc.metadata["source_file"] = filename
 
-            documents.extend(docs)
-            print(f"Loaded resume: {filename}")
+                documents.extend(docs)
+                print(f"✅ Loaded resume: {filename}")
+            except Exception as e:
+                print(f"❌ Failed to load {filename}: {e}")
 
-    print(f"Total documents loaded: {len(documents)}")
+    print(f"\n📄 Total documents loaded: {len(documents)}")
     return documents, candidate_names
 
 def load_document(pdf_path):
-    loader = PDFPlumberLoader(pdf_path)
-    return loader.load()
+    """
+    Load a single PDF resume using PyMuPDFLoader.
+
+    Args:
+        pdf_path (str): Path to the PDF file.
+
+    Returns:
+        list: List of LangChain Document objects.
+    """
+    try:
+        loader = PyMuPDFLoader(pdf_path)
+        return loader.load()
+    except Exception as e:
+        print(f"❌ Failed to load document: {e}")
+        return []
