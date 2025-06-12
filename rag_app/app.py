@@ -86,7 +86,7 @@ def rank_candidates(criteria, vectorstore, candidate_names, top_n=10, k_per_cand
     # Step 4: Evaluate candidates
     for candidate in top_candidates:
         print(f"⚙️ Evaluating: {candidate}")
-        out[candidate] = folder_path + "/" + candidate + ".pdf"
+        #out[candidate] = folder_path + "/" + candidate + ".pdf"
         candidate_docs = [doc for doc in all_docs if doc.metadata.get("candidate_name") == candidate][:k_per_candidate]
 
         context = "\n\n".join([doc.page_content for doc in candidate_docs])
