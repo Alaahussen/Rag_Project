@@ -253,8 +253,6 @@ Format your response as:
 # ================= Page 2: Chatbot ==================
 elif page == "💬 Candidate Chatbot":
     st.markdown('<div class="title-center">💬 Candidate Chatbot</div>', unsafe_allow_html=True)
-    
-    
 
     if not st.session_state.out:
         st.warning("⚠️ Please upload CVs and rank candidates on the 'Rank Candidates' page first")
@@ -270,6 +268,10 @@ elif page == "💬 Candidate Chatbot":
     query = st.chat_input("Ask about a candidate ")
 
     if query:
+        # 🔍 Print debug info
+        print("🔍 First Name Dict:", st.session_state.first_name_dict)
+        print("🔍 Full Name Dict:", st.session_state.full_name_dict)
+
         greetings = ["hi", "hello", "hey", "good morning", "good evening"]
         if query.strip().lower() in greetings or re.match(r"^(hi|hello|hey)[.!\s]*$", query.strip(), re.IGNORECASE):
             st.session_state.chat_history.append((query, "👋 Hello! How can I assist you with candidate information today?"))
@@ -280,12 +282,18 @@ elif page == "💬 Candidate Chatbot":
                 st.session_state.first_name_dict
             )
 
+            print("🔎 Matched Names from Query:", candidate_names)
+
             candidate_key = None
             if candidate_names:
                 candidate_key = candidate_names[0].lower()
+
                 if candidate_key != st.session_state.last_candidate_key:
                     doc_path = st.session_state.full_name_dict.get(candidate_key) or \
                                st.session_state.first_name_dict.get(candidate_key)
+
+                    print("📄 Loaded CV Path for Candidate:", doc_path)
+
                     if doc_path:
                         with st.spinner(f"📖 Loading {candidate_key}'s CV..."):
                             document = load_document(doc_path)
@@ -313,3 +321,4 @@ elif page == "💬 Candidate Chatbot":
             st.markdown(f'<div class="user-message">🧑 <strong>You:</strong><br>{q}</div>', unsafe_allow_html=True)
             st.markdown(f'<div class="assistant-message">🤖 <strong>Assistant:</strong><br>{a}</div>', unsafe_allow_html=True)
             st.markdown('<div class="clearfix"></div>', unsafe_allow_html=True)
+
