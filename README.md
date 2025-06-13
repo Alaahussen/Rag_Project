@@ -1,6 +1,10 @@
 
 # RAG-Based Job Matching and Chat Application
 
+## 🎥 Demo Video
+[Download and Watch the Video](project.mp4)
+
+
 ## Overview
 
 This project is a **Retrieval-Augmented Generation (RAG)** application designed to streamline the recruitment and candidate evaluation process. It allows users to:
@@ -9,10 +13,6 @@ This project is a **Retrieval-Augmented Generation (RAG)** application designed 
 * Extract the **top-N candidates** relevant to a specific **job description** using semantic search.
 * **Chat interactively** about the shortlisted candidates, their qualifications, and their past projects using a powerful **LLM (Gemini)** integrated with **FAISS** for fast vector search.
  ![RAG Diagram](rag.jpeg)
-
-🎥 Demo Video
-![Project Demo](project.gif)
-
 
 
 ## Key Features
