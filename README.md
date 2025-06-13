@@ -10,6 +10,8 @@ This project is a **Retrieval-Augmented Generation (RAG)** application designed 
 * **Chat interactively** about the shortlisted candidates, their qualifications, and their past projects using a powerful **LLM (Gemini)** integrated with **FAISS** for fast vector search.
  ![RAG Diagram](rag.jpeg)
 
+🎥 Demo Video
+![Project Demo](project.gif)
 
 
 
