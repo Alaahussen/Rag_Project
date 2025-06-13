@@ -1,5 +1,5 @@
 import os
-from langchain.document_loaders import PyMuPDFLoader, TextLoader, UnstructuredWordDocumentLoader
+from langchain.document_loaders import PyMuPDFLoader, TextLoader, UnstructuredWordDocumentLoader,PDFPlumberLoader
 
 from langchain.schema import Document
 
