@@ -117,17 +117,20 @@ Justification: [Your decision and explanation]
     
 def extract_matches_and_paths(evaluation_output, upload_dir, cutoff=0.6):
     """
-    Extract candidate names from evaluation output and match them to PDF files using fuzzy matching.
+    Extract candidate names from evaluation output and match them to files (.pdf, .docx, .txt) using fuzzy matching.
     Assumes the candidate name is the first line of each block.
-    Returns: {candidate_name: full_pdf_path}
+    Returns: {candidate_name: full_file_path}
     """
     matched = {}
-    
-    # Get all PDF filenames and their lowercase base names
-    pdf_files = [f for f in os.listdir(upload_dir) if f.lower().endswith(".pdf")]
-    pdf_basenames = [os.path.splitext(f)[0].lower() for f in pdf_files]
 
-    # Split the evaluation into blocks per candidate
+    # Supported file extensions
+    supported_exts = [".pdf", ".docx", ".txt"]
+
+    # Get all supported files and their lowercase base names
+    all_files = [f for f in os.listdir(upload_dir) if os.path.splitext(f)[1].lower() in supported_exts]
+    file_basenames = [os.path.splitext(f)[0].lower() for f in all_files]
+
+    # Split the evaluation output into blocks (one per candidate)
     for block in evaluation_output.strip().split("\n\n"):
         lines = block.strip().splitlines()
         if not lines:
@@ -136,13 +139,14 @@ def extract_matches_and_paths(evaluation_output, upload_dir, cutoff=0.6):
         # Assume the first line is the candidate name
         candidate_name = lines[0].strip().lower()
 
-        # Fuzzy match with PDF filenames
-        closest = difflib.get_close_matches(candidate_name, pdf_basenames, n=1, cutoff=cutoff)
+        # Fuzzy match against file basenames
+        closest = difflib.get_close_matches(candidate_name, file_basenames, n=1, cutoff=cutoff)
         if closest:
-            match_idx = pdf_basenames.index(closest[0])
-            matched[candidate_name] = os.path.join(upload_dir, pdf_files[match_idx])
+            match_idx = file_basenames.index(closest[0])
+            matched[candidate_name] = os.path.join(upload_dir, all_files[match_idx])
 
     return matched
+
 
     
 # CSS styling
@@ -244,8 +248,8 @@ if page == "🏆 Rank Candidates":
     st.markdown('<div class="title-center">🏆 Rank Top Candidates Based on Job Description</div>', unsafe_allow_html=True)
     
     uploaded_files = st.file_uploader(
-        "📂 Upload CVs (PDF format)", 
-        type=["pdf"], 
+        "📂 Upload CVs", 
+        type=["pdf","txt","docx"], 
         accept_multiple_files=True,
         key="file_uploader"
     )
