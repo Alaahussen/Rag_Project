@@ -65,7 +65,7 @@ This project is a **Retrieval-Augmented Generation (RAG)** application designed 
 
 ## Future Work
 
-* 1. Adaptive Feedback Loop
+1. Adaptive Feedback Loop
 
 Learn from recruiter ratings to improve matching
 
