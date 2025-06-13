@@ -65,8 +65,19 @@ This project is a **Retrieval-Augmented Generation (RAG)** application designed 
 
 ## Future Work
 
-* Add support for LinkedIn profiles or GitHub pages.
-* Deploy via Docker or HuggingFace Spaces.
+* 1. Adaptive Feedback Loop
+
+Learn from recruiter ratings to improve matching
+
+
+ 2. Multilingual CV Support
+
+Handle global recruitment at scale
+
+
+ 3. ATS Integration
+
+Plug into existing HR systems
 
 ## 🎥 Demo Video
 [Download and Watch the Video](project.mp4)
