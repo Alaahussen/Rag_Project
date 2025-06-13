@@ -30,3 +30,6 @@ torchvision==0.16.2
 
 # --- Google Generative AI ---
 google-generativeai==0.3.2
+
+unstructured
+python-docx
