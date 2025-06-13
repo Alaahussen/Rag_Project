@@ -303,10 +303,15 @@ if page == "🏆 Rank Candidates":
                                 full_name = " ".join(name_parts[:2])
                                 st.session_state.full_name_dict[full_name] = path
 
-                    st.subheader("🏅 Top Candidates")
                     #st.markdown(ranking)
                     # Split the full ranking output into blocks per candidate
                     # Split the ranking into individual candidate blocks
+
+                    if len(ranking==0):
+                        st.warning("No matching candidates found")
+                    else:
+                        st.subheader("🏅 Top Candidates")
+
                     candidate_blocks = ranking.split("\n\n\n\n")
                     
                     for block in candidate_blocks:
