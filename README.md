@@ -1,7 +1,5 @@
 
 # RAG-Based Job Matching and Chat Application
-
- ![APP Image](App.PNG)
  
 ## Overview
 
@@ -72,3 +70,5 @@ This project is a **Retrieval-Augmented Generation (RAG)** application designed 
 
 ## 🎥 Demo Video
 [Download and Watch the Video](project.mp4)
+
+ ![APP Image](App.PNG)
