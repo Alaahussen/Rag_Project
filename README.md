@@ -8,7 +8,7 @@ This project is a **Retrieval-Augmented Generation (RAG)** application designed 
 * Upload multiple **CVs/resumes**.
 * Extract the **top-N candidates** relevant to a specific **job description** using semantic search.
 * **Chat interactively** about the shortlisted candidates, their qualifications, and their past projects using a powerful **LLM (Gemini)** integrated with **FAISS** for fast vector search.
-* ![RAG Diagram](rag.jpeg)
+ ![RAG Diagram](rag.jpeg)
 
 
 
