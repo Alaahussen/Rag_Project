@@ -1,10 +1,8 @@
 
 # RAG-Based Job Matching and Chat Application
 
-## 🎥 Demo Video
-[Download and Watch the Video](project.mp4)
-
-
+ ![APP Image](App.PNG)
+ 
 ## Overview
 
 This project is a **Retrieval-Augmented Generation (RAG)** application designed to streamline the recruitment and candidate evaluation process. It allows users to:
@@ -71,3 +69,6 @@ This project is a **Retrieval-Augmented Generation (RAG)** application designed 
 
 * Add support for LinkedIn profiles or GitHub pages.
 * Deploy via Docker or HuggingFace Spaces.
+
+## 🎥 Demo Video
+[Download and Watch the Video](project.mp4)
