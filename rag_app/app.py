@@ -4,7 +4,7 @@ import spacy
 import shutil
 import warnings
 from pathlib import Path
-from collections import Counte
+from collections import Counter
 import tempfile
 from collections import Counter
 import streamlit as st
