@@ -307,7 +307,7 @@ if page == "🏆 Rank Candidates":
                     # Split the full ranking output into blocks per candidate
                     # Split the ranking into individual candidate blocks
 
-                    if len(ranking==0):
+                    if not ranking :
                         st.warning("No matching candidates found")
                     else:
                         st.subheader("🏅 Top Candidates")
